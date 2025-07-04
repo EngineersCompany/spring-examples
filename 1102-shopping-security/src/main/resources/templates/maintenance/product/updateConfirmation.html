@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>商品更新確認</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <script>
+  	        function sendPutRequest() {
+  	            const form = document.getElementById("putForm");
+  	            const formData = new FormData(form);
+				const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+		        const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').content;
+
+				// APIに送信するデータオブジェクトを構築
+				const productData = {};
+
+				// FormDataから必要なフィールドのみを取得し、数値型に変換
+				// HTMLのth:field="*{...}"で生成されるname属性に基づいてデータを取得
+				// 重要なのは、APIが期待するフィールド名と型に合わせること
+				productData.id = formData.get('id'); // name="id"の値を数値に変換
+				productData.name = formData.get('name');   // name="name"の値
+				productData.price = Number(formData.get('price')); // name="price"の値を数値に変換
+				productData.stock = Number(formData.get('stock')); // name="stock"の値を数値に変換
+
+				
+//  	            formData.forEach((value, key) => data[key] = value);
+				console.log("Sending data:", productData); // 送信するデータを確認
+
+            // fetchリクエストのURLを確認してください。
+            // Spring Bootの@PutMapping("/{id}")と合致するように
+            // 例えば、/maintenance/product/12 のようなURLになります。
+            	fetch('/maintenance/product/' + productData.id, {
+                	method: 'PUT',
+                	headers: {
+                    	'Content-Type': 'application/json',
+                    // CSRFトークンが必要な場合はここに追加します
+					// CSRFトークンをヘッダーに追加
+					     [csrfHeaderName]: csrfToken
+					// 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content,
+                	},
+                	body: JSON.stringify(productData), // JSON形式でボディを送信
+            	})
+  	            .then(response => {
+  	                if (response.ok) {
+  	                    alert('Product updated successfully!');
+  	                } else {
+  	                    alert('Failed to update product.');
+  	                }
+  	                console.log(response);
+  	            })
+  	            .catch(error => {
+  	                console.error('Error:', error);
+  	                alert('An error occurred.');
+  	            });
+  	        }
+  	</script>
+	</head>
+<body>
+<h1>商品更新確認</h1>
+     <h1>PUT Product</h1>
+		<form th:id="putForm" th:object="${productMaintenanceInput}" method="put" onsubmit="return false;">
+		    <input type="hidden" name="_method" value="PUT"> 
+		  <table>
+		     <tr>
+		       <th>商品ID</th>
+		       <td>
+		         <span th:text="*{id}"></span>
+		       </td>
+		     </tr>
+		     <tr>
+		       <th>商品名</th>
+		       <td>
+		         <span th:text="*{name}"></span>
+		       </td>
+		     </tr>
+		     <tr>
+		       <th>価格</th>
+		       <td>
+		         <span th:text="*{price}"></span>円
+		       </td>
+		     </tr>
+		     <tr>
+		       <th>在庫数</th>
+		       <td>
+		         <span th:text="*{stock}"></span>
+		       </td>
+		     </tr>
+		   </table>
+		   <input type="hidden" th:field="*{id}"/>
+		   <input type="hidden" th:field="*{name}"/>
+		   <input type="hidden" th:field="*{price}"/>
+		   <input type="hidden" th:field="*{stock}"/>
+  
+    <button type="button" onclick="sendPutRequest()">Put</button>
+</form>
+</body>
+</html>
