@@ -7,7 +7,13 @@
         <artifactId>0000-parent-pom</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>0001-training-common</artifactId>
+	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    	<maven.compiler.source>17</maven.compiler.source> 
+    	<maven.compiler.target>17</maven.compiler.target> 
+  	</properties>    
+  	<artifactId>0001-training-common</artifactId>
 	<packaging>jar</packaging>
     <dependencies>
         <dependency>
